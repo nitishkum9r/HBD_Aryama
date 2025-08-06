@@ -121,9 +121,9 @@
       background-repeat: no-repeat;
     }
 
-    /* Lazy loaded background cycling */
+    /* Background image cycling - 40 seconds per cycle, will run 2 cycles for 80 seconds total */
     body.envelope-opened {
-      animation: cycleBackgrounds 8s infinite;
+      animation: cycleBackgrounds 40s infinite;
     }
 
     .valentine {
@@ -497,26 +497,29 @@
     }
 
     @keyframes cycleBackgrounds {
-      10% {
+      0% {
         background-image: url('bg1.jpg');
       }
-      25% {
+      14.28% {
         background-image: url('bg2.jpg');
       }
-      40% {
+      28.56% {
         background-image: url('bg3.jpg');
       }
-      65% {
+      42.84% {
         background-image: url('bg4.jpg');
       }
-      80% {
+      57.12% {
         background-image: url('bg5.jpg');
       }
-      90% {
+      71.4% {
         background-image: url('bg6.jpg');
       }
-      100% {
+      85.68% {
         background-image: url('bg7.jpg');
+      }
+      100% {
+        background-image: url('bg1.jpg');
       }
     }
 
@@ -826,11 +829,17 @@
           audio.addEventListener('ended', () => {
             musicPlaying = false;
             deactivateGlitterMode();
+            // Auto-close envelope when music ends
+            container.classList.remove('clicked');
+            debouncedClose();
           }, { once: true });
           
           audio.addEventListener('pause', () => {
             musicPlaying = false;
             deactivateGlitterMode();
+            // Auto-close envelope when music is paused
+            container.classList.remove('clicked');
+            debouncedClose();
           }, { once: true });
           
         }).catch(error => {
@@ -894,14 +903,11 @@
         if (!isEnvelopeOpened) {
           container.classList.add('clicked');
           debouncedOpen();
-        } else {
-          container.classList.remove('clicked');
-          debouncedClose();
         }
+        // Removed manual close on click - let music duration handle it
       });
       
       // Touch events for mobile (optimized)
-      let touchTimeout;
       container.addEventListener('touchstart', (e) => {
         e.preventDefault();
         initAudio();
@@ -909,15 +915,6 @@
           container.classList.add('clicked');
           debouncedOpen();
         }
-      }, { passive: false });
-      
-      container.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        // Auto-close on mobile after delay
-        touchTimeout = setTimeout(() => {
-          container.classList.remove('clicked');
-          debouncedClose();
-        }, 4000);
       }, { passive: false });
       
       // Handle page visibility changes
