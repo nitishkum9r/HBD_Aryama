@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HBD Aryama</title>
+  <link href="https://fonts.googleapis.com/css2?family=Solitreo&family=Pangolin&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #fee2e9;
+      --light-pink: #fcbbcc;
+      --pink: #fba7bd;
+      --dark-pink: #f980a1;
+      --shadow: #e8c5d0;
+      --card: #fff;
+      --heart: #f40b4a;
+      --sparkle: #ffffff;
+      --gold: #ffd700;
+      --silver: #c0c0c0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-family: 'Solitreo', cursive;
+      font-size: clamp(2vmin, 3vw, 4vmin);
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    body {
+      height: 100vh;
+      width: 100vw;
+      background: var(--background);
+      font-family: "Pangolin", cursive;
+      font-size: 1vmin;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.8s ease;
+      position: relative;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* Background image cycling when envelope opens and music plays */
+    body.envelope-opened {
+      background-image: url('https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1920&h=1080&fit=crop');
+      animation: cycleBackgrounds 8s infinite;
+    }
+
+    .valentine {
+      height: 100vh;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: linear-gradient(313.01deg, rgba(221, 84, 133, 1), rgba(132, 22, 72, 1) 81.14%);
+      z-index: 1;
+      transition: opacity 0.8s ease;
+    }
+
+    .valentine.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .valentine > div {
+      position: absolute;
+      height: 100vh;
+      width: 100%;
+    }
+
+    /* Enhanced glittery falling heart animations */
+    #heart-group-1,
+    #heart-group-2,
+    #heart-group-3,
+    #heart-group-4 {
+      will-change: transform, filter;
+      transform: translateY(-100%);
+    }
+
+    #heart-group-1 {
+      background: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 50% 50% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 25% 25% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 75% 75% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 10% 90% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 90% 10% no-repeat;
+      background-size: 20px 20px;
+      filter: blur(12px) drop-shadow(0 0 8px var(--heart)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+      z-index: 10;
+      animation: drop linear 17s 2s infinite, glitterShimmer 1.2s ease-in-out infinite;
+    }
+
+    #heart-group-2 {
+      background: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f980a1"/></svg>') 50% 50% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f980a1"/></svg>') 25% 75% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f980a1"/></svg>') 75% 25% no-repeat;
+      background-size: 30px 30px;
+      filter: blur(5px) drop-shadow(0 0 12px var(--pink)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+      z-index: 20;
+      animation: drop linear 14s 0s infinite, glitterShimmer 1.5s ease-in-out infinite;
+    }
+
+    #heart-group-3 {
+      background: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23fba7bd"/></svg>') 50% 50% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23fba7bd"/></svg>') 25% 75% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23fba7bd"/></svg>') 75% 25% no-repeat;
+      background-size: 25px 25px;
+      filter: blur(3px) drop-shadow(0 0 10px var(--light-pink)) drop-shadow(0 0 18px rgba(192, 192, 192, 0.7));
+      z-index: 30;
+      animation: drop linear 12s 1s infinite, glitterShimmer 1.8s ease-in-out infinite;
+    }
+
+    #heart-group-4 {
+      background: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 50% 50% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 25% 75% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 75% 25% no-repeat;
+      background-size: 35px 35px;
+      filter: blur(2px) drop-shadow(0 0 15px var(--heart)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.8));
+      z-index: 40;
+      animation: drop linear 10s 1s infinite, glitterShimmer 1s ease-in-out infinite;
+    }
+
+
+
+    #star-group-1,
+    #star-group-2 {
+      will-change: opacity;
+    }
+
+    #star-group-1 {
+      background: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 50% 50% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 25% 25% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 75% 75% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 10% 90% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 90% 10% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 30% 60% no-repeat;
+      background-size: 15px 15px;
+      filter: blur(0px) drop-shadow(0 0 12px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 20px var(--gold));
+      z-index: 60;
+      animation: glitter linear 1.8s 0s infinite, starSparkle 2s ease-in-out infinite;
+    }
+
+    #star-group-2 {
+      background: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 50% 50% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 25% 25% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 75% 75% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 10% 90% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 90% 10% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 30% 60% no-repeat;
+      background-size: 10px 10px;
+      filter: blur(0px) drop-shadow(0 0 15px rgba(255, 215, 0, 1)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.8));
+      z-index: 60;
+      animation: glitter linear 1.9s 0s infinite, starSparkle 1.5s ease-in-out infinite;
+    }
+
+    #star-group-2 {
+      background: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 50% 50% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 25% 25% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 75% 75% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 10% 90% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 90% 10% no-repeat,
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 30% 60% no-repeat;
+      background-size: 10px 10px;
+      filter: blur(0px) drop-shadow(0 0 12px rgba(255, 215, 0, 0.9));
+      z-index: 60;
+      animation: glitter linear 1.9s 0s infinite, starTwinkle 2.5s ease-in-out infinite;
+    }
+
+    .heart-lg {
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') no-repeat;
+      background-size: contain;
+      height: clamp(200px, 25vmin, 389px);
+      width: clamp(225px, 28vmin, 438px);
+      top: 50%;
+      left: -2%;
+      transform: rotate(299deg);
+      filter: blur(1px) drop-shadow(0 0 15px var(--heart));
+      z-index: 45;
+      position: absolute;
+      animation: heartFloat 4s ease-in-out infinite;
+    }
+
+    .heart-sm {
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23fba7bd"/></svg>') no-repeat;
+      background-size: contain;
+      height: clamp(130px, 16vmin, 264px);
+      width: clamp(150px, 19vmin, 299px);
+      top: 30%;
+      left: 65%;
+      transform: rotate(45deg);
+      filter: blur(7px) drop-shadow(0 0 12px var(--pink));
+      z-index: 15;
+      position: absolute;
+      animation: heartFloat 3.5s ease-in-out infinite reverse;
+    }
+
+    .heart-xs {
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f980a1"/></svg>') no-repeat;
+      background-size: contain;
+      height: clamp(45px, 6vmin, 87px);
+      width: clamp(46px, 6vmin, 89px);
+      top: 10%;
+      left: 30%;
+      transform: rotate(299deg);
+      filter: blur(3px) drop-shadow(0 0 8px var(--dark-pink));
+      z-index: 35;
+      position: absolute;
+      animation: heartFloat 5s ease-in-out infinite;
+    }
+
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.23);
+      height: 100vh;
+      width: 100vw;
+      position: absolute;
+      z-index: 100;
+      transition: opacity 0.8s ease;
+    }
+
+    .overlay.hidden {
+      opacity: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 200;
+      will-change: transform;
+    }
+
+    .envelope {
+      position: relative;
+      background: var(--dark-pink);
+      height: 30vmin;
+      width: 47.9vmin;
+      filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+    }
+
+    .card {
+      position: absolute;
+      background: var(--card);
+      height: 25vmin;
+      width: 43vmin;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      left: 2.5vmin;
+      top: 0vmin;
+      animation: slide-rev 0.2s ease-out;
+      will-change: transform;
+      filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.2));
+    }
+
+    .message {
+      position: absolute;
+      top: 5vmin;
+    }
+
+    .cover {
+      position: absolute;
+      height: 0;
+      width: 0;
+      border-bottom: 15vmin solid var(--pink);
+      border-left: 24vmin solid transparent;
+      border-right: 24vmin solid transparent;
+      top: 15vmin;
+      z-index: 3;
+    }
+
+    .cover::after {
+      position: absolute;
+      content: "";
+      border-left: 24.5vmin solid var(--light-pink);
+      border-bottom: 15vmin solid transparent;
+      border-top: 15vmin solid transparent;
+      top: -15vmin;
+      left: -24vmin;
+    }
+
+    .cover::before {
+      position: absolute;
+      content: "";
+      border-right: 24.5vmin solid var(--light-pink);
+      border-bottom: 15vmin solid transparent;
+      border-top: 15vmin solid transparent;
+      top: -15vmin;
+      left: -0.5vmin;
+    }
+
+    .lid {
+      position: absolute;
+      height: 0;
+      width: 0;
+      border-top: 15vmin solid var(--dark-pink);
+      border-left: 24vmin solid transparent;
+      border-right: 24vmin solid transparent;
+      top: 0;
+      transform-origin: top;
+      animation: open-rev 2s;
+      will-change: transform;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+    }
+
+    .container:hover .lid {
+      animation: open 0.5s ease-out;
+      animation-fill-mode: forwards;
+    }
+
+    .container:hover .card {
+      animation: slide 0.2s ease-out;
+      animation-delay: 0.5s;
+      animation-fill-mode: forwards;
+    }
+
+    .shadow {
+      position: relative;
+      top: 3vmin;
+      border-radius: 50%;
+      opacity: 0.7;
+      height: 2vmin;
+      width: 48vmin;
+      background: var(--shadow);
+    }
+
+    .heart {
+      position: relative;
+      width: 5vmin;
+      height: 4vmin;
+      top: 7vmin;
+      left: -1vmin;
+      filter: drop-shadow(0 0 8px var(--heart));
+    }
+
+    .heart:before,
+    .heart:after {
+      position: absolute;
+      content: "";
+      left: 2.5vmin;
+      top: 0;
+      width: 2.5vmin;
+      height: 4vmin;
+      background: var(--heart);
+      border-radius: 2.5vmin 2.5vmin 0 0;
+      transform: rotate(-45deg);
+      transform-origin: 0 100%;
+    }
+
+    .heart:after {
+      left: 0;
+      transform: rotate(45deg);
+      transform-origin: 100% 100%;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      body {
+        font-size: 1.2vmin;
+      }
+      
+      h1 {
+        font-size: 3.5vmin;
+        line-height: 1.3;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        font-size: 1.5vmin;
+      }
+      
+      h1 {
+        font-size: 4vmin;
+        line-height: 1.2;
+      }
+      
+      .message {
+        top: 4vmin;
+      }
+    }
+
+    /* Enhanced keyframe animations for glittery effects */
+    @keyframes open {
+      to {
+        transform: rotateX(180deg);
+      }
+    }
+
+    @keyframes slide {
+      to {
+        transform: translateY(clamp(-10vmin, -15vmin, -150px));
+        z-index: 2;
+      }
+    }
+
+    @keyframes open-rev {
+      from {
+        transform: rotateX(-180deg);
+      }
+    }
+
+    @keyframes slide-rev {
+      from {
+        transform: translateY(clamp(-10vmin, -15vmin, -150px));
+      }
+    }
+
+    @keyframes drop {
+      from {
+        transform: translateY(-100%);
+      }
+      to {
+        transform: translateY(100%);
+      }
+    }
+
+    @keyframes glitter {
+      0%, 100% {
+        opacity: 0.3;
+      }
+      25% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.6;
+      }
+      75% {
+        opacity: 0.9;
+      }
+    }
+
+    @keyframes glitterShimmer {
+      0%, 100% {
+        filter: blur(12px) drop-shadow(0 0 8px var(--heart)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+        opacity: 0.8;
+      }
+      25% {
+        filter: blur(8px) drop-shadow(0 0 20px var(--heart)) drop-shadow(0 0 30px var(--gold)) drop-shadow(0 0 40px rgba(255, 255, 255, 1));
+        opacity: 1;
+      }
+      50% {
+        filter: blur(5px) drop-shadow(0 0 25px var(--heart)) drop-shadow(0 0 35px var(--gold)) drop-shadow(0 0 45px rgba(192, 192, 192, 0.9));
+        opacity: 0.9;
+      }
+      75% {
+        filter: blur(10px) drop-shadow(0 0 18px var(--heart)) drop-shadow(0 0 28px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 38px var(--gold));
+        opacity: 1;
+      }
+    }
+
+    @keyframes starSparkle {
+      0%, 100% {
+        filter: blur(0px) drop-shadow(0 0 12px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 20px var(--gold));
+        opacity: 0.7;
+        transform: scale(1) rotate(0deg);
+      }
+      25% {
+        filter: blur(0px) drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 35px var(--gold)) drop-shadow(0 0 45px rgba(255, 215, 0, 0.9));
+        opacity: 1;
+        transform: scale(1.3) rotate(90deg);
+      }
+      50% {
+        filter: blur(0px) drop-shadow(0 0 30px rgba(255, 255, 255, 1)) drop-shadow(0 0 40px var(--gold)) drop-shadow(0 0 50px rgba(192, 192, 192, 1));
+        opacity: 0.9;
+        transform: scale(1.1) rotate(180deg);
+      }
+      75% {
+        filter: blur(0px) drop-shadow(0 0 20px rgba(255, 255, 255, 1)) drop-shadow(0 0 30px var(--gold)) drop-shadow(0 0 40px rgba(255, 215, 0, 0.8));
+        opacity: 1;
+        transform: scale(1.2) rotate(270deg);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translateY(-100%) scale(1);
+      }
+      50% {
+        transform: translateY(-100%) scale(1.15);
+      }
+    }
+
+    @keyframes heartFloat {
+      0%, 100% {
+        transform: rotate(299deg) translateY(0px);
+      }
+      50% {
+        transform: rotate(299deg) translateY(-10px);
+      }
+    }
+
+    @keyframes cycleBackgrounds {
+      0% {
+        background-image: url('bg1.jpg');
+      }
+      25% {
+        background-image: url('bg2.jpg');
+      }
+      50% {
+        background-image: url('bg3.jpg');
+      }
+      75% {
+        background-image: url('bg4.jpg');
+      }
+      85% {
+        background-image: url('bg5.jpg');
+      }
+
+      95% {
+        background-image: url('bg6.jpg');
+      }
+
+      100% {
+        background-image: url('bg7.jpg');
+      }
+    }
+
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+      .container:active .lid {
+        animation: open 0.5s ease-out;
+        animation-fill-mode: forwards;
+      }
+
+      .container:active .card {
+        animation: slide 0.2s ease-out;
+        animation-delay: 0.5s;
+        animation-fill-mode: forwards;
+      }
+    }
+
+    /* Reduce motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      :root {
+        --background: #ffffff;
+        --light-pink: #ff69b4;
+        --pink: #ff1493;
+        --dark-pink: #dc143c;
+        --shadow: #000000;
+        --card: #ffffff;
+        --heart: #ff0000;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="valentine" id="valentine-bg">
+    <div id="heart-group-1"></div>
+    <div id="heart-group-2"></div>
+    <div id="heart-group-3"></div>
+    <div id="heart-group-4"></div>
+    <div id="star-group-1"></div>
+    <div id="star-group-2"></div>
+    <div class="heart-fixed heart-xs"></div>
+    <div class="heart-fixed heart-sm"></div>
+    <div class="heart-fixed heart-lg"></div>
+    <div class="overlay" id="overlay"></div>
+  </div>
+  <div class="container" id="envelope-container">
+    <div class="envelope"></div>
+    <div class="card">
+      <h1 class="message">Happy Birthday Aryama,<br>Baby,<br>I Love You <br> </h1>
+      <div class="heart"></div>
+    </div>
+    <div class="cover"></div>
+    <div class="lid"></div>
+    <div class="shadow"></div>
+  </div>
+  
+  <audio id="valentine-audio" preload="auto">
+    <source src="hbd.mp3" type="audio/mpeg">
+    <source src="hbd.ogg" type="audio/ogg">
+    <source src="hbd.wav" type="audio/wav">
+  </audio>
+  
+  <script>
+    const container = document.getElementById('envelope-container');
+    const audio = document.getElementById('valentine-audio');
+    const valentineBg = document.getElementById('valentine-bg');
+    const overlay = document.getElementById('overlay');
+    const body = document.body;
+    
+    let isEnvelopeOpened = false;
+    let audioContext = null;
+    let musicPlaying = false;
+    
+    // Initialize audio context on first user interaction
+    function initAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        audio.volume = 0.7;
+      }
+    }
+    
+    // Optimized debounce function
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+    
+    
+    function deactivateGlitterMode() {
+      body.classList.remove('music-playing');
+      
+      // Reset to original less glittery state
+      const heartGroups = document.querySelectorAll('[id*="heart-group"]');
+      heartGroups.forEach((group) => {
+        group.style.animation = '';
+        group.style.filter = '';
+      });
+      
+      const starGroups = document.querySelectorAll('[id*="star-group"]');
+      starGroups.forEach((group) => {
+        group.style.filter = '';
+        group.style.animation = '';
+      });
+    }
+    
+    // Create dynamic sparkle elements
+    function createDynamicSparkles() {
+      for (let i = 0; i < 20; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'dynamic-sparkle';
+        sparkle.style.cssText = `
+          position: absolute;
+          width: ${Math.random() * 6 + 3}px;
+          height: ${Math.random() * 6 + 3}px;
+          background: radial-gradient(circle, ${Math.random() > 0.5 ? '#ffd700' : '#ffffff'} 0%, transparent 70%);
+          border-radius: 50%;
+          left: ${Math.random() * 100}%;
+          top: ${Math.random() * 100}%;
+          z-index: 70;
+          opacity: 0;
+          animation: dynamicSparkle ${Math.random() * 2 + 1}s ease-in-out infinite;
+          filter: drop-shadow(0 0 8px currentColor);
+        `;
+        valentineBg.appendChild(sparkle);
+      }
+      
+      // Add CSS for dynamic sparkles
+      if (!document.getElementById('dynamic-sparkle-styles')) {
+        const style = document.createElement('style');
+        style.id = 'dynamic-sparkle-styles';
+        style.textContent = `
+          @keyframes dynamicSparkle {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.5) rotate(180deg); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }
+    
+    function removeDynamicSparkles() {
+      const sparkles = document.querySelectorAll('.dynamic-sparkle');
+      sparkles.forEach(sparkle => sparkle.remove());
+    }
+    
+    // Handle envelope opening with enhanced effects
+    function openEnvelope() {
+      if (isEnvelopeOpened) return;
+      
+      isEnvelopeOpened = true;
+      initAudio();
+      
+      requestAnimationFrame(() => {
+        // Hide valentine background and overlay
+        valentineBg.classList.add('hidden');
+        overlay.classList.add('hidden');
+        
+        // Change body background to cycling images
+        body.classList.add('envelope-opened');
+        
+        // Play audio with enhanced glitter effects
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            musicPlaying = true;
+            activateGlitterMode();
+            
+            // Monitor audio playback
+            audio.addEventListener('ended', () => {
+              musicPlaying = false;
+              deactivateGlitterMode();
+            });
+            
+            audio.addEventListener('pause', () => {
+              musicPlaying = false;
+              deactivateGlitterMode();
+            });
+            
+          }).catch(error => {
+            console.log('Audio autoplay prevented:', error);
+            // Fallback: play on next user interaction
+            document.addEventListener('click', () => {
+              audio.play().then(() => {
+                musicPlaying = true;
+                activateGlitterMode();
+              }).catch(e => console.log('Audio play failed:', e));
+            }, { once: true });
+          });
+        }
+      });
+    }
+    
+    // Handle envelope closing
+    function closeEnvelope() {
+      if (!isEnvelopeOpened) return;
+      
+      isEnvelopeOpened = false;
+      musicPlaying = false;
+      
+      requestAnimationFrame(() => {
+        // Show valentine background and overlay
+        valentineBg.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        
+        // Remove body background image
+        body.classList.remove('envelope-opened');
+        
+        // Deactivate glitter mode
+        deactivateGlitterMode();
+        
+        // Pause and reset audio
+        audio.pause();
+        audio.currentTime = 0;
+      });
+    }
+    
+    // Debounced event handlers for better performance
+    const debouncedOpen = debounce(openEnvelope, 50);
+    const debouncedClose = debounce(closeEnvelope, 100);
+    
+    // Desktop hover events
+    if (window.matchMedia('(hover: hover)').matches) {
+      container.addEventListener('mouseenter', debouncedOpen);
+      container.addEventListener('mouseleave', debouncedClose);
+    }
+    
+    // Touch events for mobile
+    container.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      initAudio();
+      debouncedOpen();
+    });
+    
+    container.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      setTimeout(debouncedClose, 3000); // Keep open longer on mobile
+    });
+    
+    // Click events as fallback
+    container.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!isEnvelopeOpened) {
+        debouncedOpen();
+      }
+    });
+    
+    // Handle page visibility changes
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        audio.pause();
+        musicPlaying = false;
+        deactivateGlitterMode();
+      }
+    });
+    
+    // Preload background images for smoother transitions
+    const backgroundImages = [
+      'bg1.jpg',
+      'bg2.jpg',
+      'bg3.jpg',
+      'bg4.jpg',
+      'bg5.jpg',
+      'bg6.jpg',
+      'bg7.jpg'
+    ];
+    
+    backgroundImages.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+    
+    // Performance optimization: reduce animation complexity on lower-end devices
+    const isLowEndDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
+    if (isLowEndDevice) {
+      document.documentElement.style.setProperty('--animation-duration-multiplier', '2');
+      // Reduce blur effects on low-end devices
+      const blurElements = document.querySelectorAll('[style*="blur"]');
+      blurElements.forEach(el => {
+        const currentFilter = getComputedStyle(el).filter;
+        if (currentFilter.includes('blur')) {
+          el.style.filter = currentFilter.replace(/blur\((\d+)px\)/, (match, px) => {
+            return `blur(${Math.max(1, parseInt(px) / 2)}px)`;
+          });
+        }
+      });
+    }
+    
+    // Handle window resize for responsive adjustments
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        container.style.display = 'none';
+        container.offsetHeight; // Trigger reflow
+        container.style.display = '';
+      }, 250);
+    });
+    
+    // Audio visualization effect (optional enhancement)
+    function createAudioVisualization() {
+      if (!audioContext || !musicPlaying) return;
+      
+      try {
+        const analyser = audioContext.createAnalyser();
+        const source = audioContext.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+        
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        
+        function visualize() {
+          if (!musicPlaying) return;
+          
+          analyser.getByteFrequencyData(dataArray);
+          const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+          
+          // Adjust sparkle intensity based on audio level
+          const sparkleGroups = document.querySelectorAll('[id*="sparkle-group"], [id*="shimmer-group"]');
+          sparkleGroups.forEach(group => {
+            group.style.opacity = Math.min(1, average / 128 + 0.3);
+          });
+          
+          requestAnimationFrame(visualize);
+        }
+        
+        visualize();
+      } catch (e) {
+        console.log('Audio visualization not supported:', e);
+      }
+    }
+    
+    // Start audio visualization when music begins
+    audio.addEventListener('play', createAudioVisualization);
+  </script>
+</body>
+</html>
