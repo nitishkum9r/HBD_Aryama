@@ -25,6 +25,78 @@
       box-sizing: border-box;
     }
 
+    /* Loader Styles */
+    .loader-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, var(--light-pink), var(--pink));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .loader-container.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--light-pink);
+      border-top: 4px solid var(--heart);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loader-text {
+      font-family: 'Pangolin', cursive;
+      font-size: 18px;
+      color: var(--heart);
+      font-weight: bold;
+    }
+
+    .progress-bar {
+      width: 200px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--heart);
+      width: 0%;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Main Content - Initially Hidden */
+    .main-content {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    .main-content.loaded {
+      opacity: 1;
+      visibility: visible;
+    }
+
     h1 {
       font-family: 'Solitreo', cursive;
       font-size: clamp(2vmin, 3vw, 4vmin);
@@ -49,9 +121,8 @@
       background-repeat: no-repeat;
     }
 
-    /* Background image cycling when envelope opens and music plays */
+    /* Lazy loaded background cycling */
     body.envelope-opened {
-      background-image: url('bg1.jpg');
       animation: cycleBackgrounds 8s infinite;
     }
 
@@ -77,108 +148,63 @@
       width: 100%;
     }
 
-    /* Enhanced glittery falling heart animations */
-    #heart-group-1,
-    #heart-group-2,
-    #heart-group-3,
-    #heart-group-4 {
-      will-change: transform, filter;
+    /* Optimized heart animations - reduced complexity */
+    .heart-group {
+      will-change: transform;
       transform: translateY(-100%);
+      opacity: 0;
+    }
+
+    .heart-group.active {
+      opacity: 1;
     }
 
     #heart-group-1 {
       background: 
         url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 50% 50% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 25% 25% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 75% 75% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 10% 90% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 90% 10% no-repeat;
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 25% 25% no-repeat;
       background-size: 20px 20px;
-      filter: blur(12px) drop-shadow(0 0 8px var(--heart)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+      filter: blur(8px) drop-shadow(0 0 8px var(--heart));
       z-index: 10;
-      animation: drop linear 17s 2s infinite, glitterShimmer 1.2s ease-in-out infinite;
+    }
+
+    #heart-group-1.active {
+      animation: drop linear 17s 2s infinite, gentleGlow 2s ease-in-out infinite;
     }
 
     #heart-group-2 {
       background: 
         url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f980a1"/></svg>') 50% 50% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f980a1"/></svg>') 25% 75% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f980a1"/></svg>') 75% 25% no-repeat;
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f980a1"/></svg>') 25% 75% no-repeat;
       background-size: 30px 30px;
-      filter: blur(5px) drop-shadow(0 0 12px var(--pink)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+      filter: blur(3px) drop-shadow(0 0 12px var(--pink));
       z-index: 20;
-      animation: drop linear 14s 0s infinite, glitterShimmer 1.5s ease-in-out infinite;
     }
 
-    #heart-group-3 {
-      background: 
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23fba7bd"/></svg>') 50% 50% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23fba7bd"/></svg>') 25% 75% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23fba7bd"/></svg>') 75% 25% no-repeat;
-      background-size: 25px 25px;
-      filter: blur(3px) drop-shadow(0 0 10px var(--light-pink)) drop-shadow(0 0 18px rgba(192, 192, 192, 0.7));
-      z-index: 30;
-      animation: drop linear 12s 1s infinite, glitterShimmer 1.8s ease-in-out infinite;
+    #heart-group-2.active {
+      animation: drop linear 14s 0s infinite, gentleGlow 2.5s ease-in-out infinite;
     }
 
-    #heart-group-4 {
-      background: 
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 50% 50% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 25% 75% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 85L35 70c-10-8-15-18-15-30 0-15 10-25 25-25 8 0 15 4 20 10 5-6 12-10 20-10 15 0 25 10 25 25 0 12-5 22-15 30L50 85z" fill="%23f40b4a"/></svg>') 75% 25% no-repeat;
-      background-size: 35px 35px;
-      filter: blur(2px) drop-shadow(0 0 15px var(--heart)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.8));
-      z-index: 40;
-      animation: drop linear 10s 1s infinite, glitterShimmer 1s ease-in-out infinite;
+    /* Stars - simplified and lazy loaded */
+    .star-group {
+      opacity: 0;
     }
 
-
-
-    #star-group-1,
-    #star-group-2 {
-      will-change: opacity;
+    .star-group.active {
+      opacity: 1;
     }
 
     #star-group-1 {
       background: 
         url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 50% 50% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 25% 25% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 75% 75% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 10% 90% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 90% 10% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 30% 60% no-repeat;
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffffff"/></svg>') 25% 25% no-repeat;
       background-size: 15px 15px;
-      filter: blur(0px) drop-shadow(0 0 12px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 20px var(--gold));
+      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
       z-index: 60;
+    }
+
+    #star-group-1.active {
       animation: glitter linear 1.8s 0s infinite, starSparkle 2s ease-in-out infinite;
-    }
-
-    #star-group-2 {
-      background: 
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 50% 50% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 25% 25% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 75% 75% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 10% 90% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 90% 10% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 30% 60% no-repeat;
-      background-size: 10px 10px;
-      filter: blur(0px) drop-shadow(0 0 15px rgba(255, 215, 0, 1)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.8));
-      z-index: 60;
-      animation: glitter linear 1.9s 0s infinite, starSparkle 1.5s ease-in-out infinite;
-    }
-
-    #star-group-2 {
-      background: 
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 50% 50% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 25% 25% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 75% 75% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 10% 90% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 90% 10% no-repeat,
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="%23ffd700"/></svg>') 30% 60% no-repeat;
-      background-size: 10px 10px;
-      filter: blur(0px) drop-shadow(0 0 12px rgba(255, 215, 0, 0.9));
-      z-index: 60;
-      animation: glitter linear 1.9s 0s infinite, starTwinkle 2.5s ease-in-out infinite;
     }
 
     .heart-lg {
@@ -203,7 +229,7 @@
       top: 50%;
       left: 65%;
       transform: rotate(45deg);
-      filter: blur(7px) drop-shadow(0 0 12px var(--pink));
+      filter: blur(5px) drop-shadow(0 0 12px var(--pink));
       z-index: 15;
       position: absolute;
       animation: heartFloat 3.5s ease-in-out infinite reverse;
@@ -393,7 +419,7 @@
       }
     }
 
-    /* Enhanced keyframe animations for glittery effects */
+    /* Optimized keyframe animations */
     @keyframes open {
       to {
         transform: rotateX(180deg);
@@ -432,65 +458,32 @@
       0%, 100% {
         opacity: 0.3;
       }
-      25% {
-        opacity: 1;
-      }
       50% {
-        opacity: 0.6;
-      }
-      75% {
-        opacity: 0.9;
+        opacity: 1;
       }
     }
 
-    @keyframes glitterShimmer {
+    @keyframes gentleGlow {
       0%, 100% {
-        filter: blur(12px) drop-shadow(0 0 8px var(--heart)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+        filter: blur(8px) drop-shadow(0 0 8px var(--heart));
         opacity: 0.8;
       }
-      25% {
-        filter: blur(8px) drop-shadow(0 0 20px var(--heart)) drop-shadow(0 0 30px var(--gold)) drop-shadow(0 0 40px rgba(255, 255, 255, 1));
-        opacity: 1;
-      }
       50% {
-        filter: blur(5px) drop-shadow(0 0 25px var(--heart)) drop-shadow(0 0 35px var(--gold)) drop-shadow(0 0 45px rgba(192, 192, 192, 0.9));
-        opacity: 0.9;
-      }
-      75% {
-        filter: blur(10px) drop-shadow(0 0 18px var(--heart)) drop-shadow(0 0 28px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 38px var(--gold));
+        filter: blur(5px) drop-shadow(0 0 15px var(--heart)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.8));
         opacity: 1;
       }
     }
 
     @keyframes starSparkle {
       0%, 100% {
-        filter: blur(0px) drop-shadow(0 0 12px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 20px var(--gold));
+        filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
         opacity: 0.7;
-        transform: scale(1) rotate(0deg);
-      }
-      25% {
-        filter: blur(0px) drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 35px var(--gold)) drop-shadow(0 0 45px rgba(255, 215, 0, 0.9));
-        opacity: 1;
-        transform: scale(1.3) rotate(90deg);
+        transform: scale(1);
       }
       50% {
-        filter: blur(0px) drop-shadow(0 0 30px rgba(255, 255, 255, 1)) drop-shadow(0 0 40px var(--gold)) drop-shadow(0 0 50px rgba(192, 192, 192, 1));
-        opacity: 0.9;
-        transform: scale(1.1) rotate(180deg);
-      }
-      75% {
-        filter: blur(0px) drop-shadow(0 0 20px rgba(255, 255, 255, 1)) drop-shadow(0 0 30px var(--gold)) drop-shadow(0 0 40px rgba(255, 215, 0, 0.8));
+        filter: drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 35px var(--gold));
         opacity: 1;
-        transform: scale(1.2) rotate(270deg);
-      }
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: translateY(-100%) scale(1);
-      }
-      50% {
-        transform: translateY(-100%) scale(1.15);
+        transform: scale(1.2);
       }
     }
 
@@ -504,29 +497,12 @@
     }
 
     @keyframes cycleBackgrounds {
-      10% {
-        background-image: url('bg1.jpg');
-      }
-      25% {
-        background-image: url('bg2.jpg');
-      }
-      40% {
-        background-image: url('bg3.jpg');
-      }
-      65% {
-        background-image: url('bg4.jpg');
-      }
-      80% {
-        background-image: url('bg5.jpg');
-      }
-
-      90% {
-        background-image: url('bg6.jpg');
-      }
-
-      100% {
-        background-image: url('bg7.jpg');
-      }
+      0%, 100% { background-color: var(--background); }
+      16% { background-color: #ffe4e6; }
+      32% { background-color: #fdf2f8; }
+      48% { background-color: #fef7ff; }
+      64% { background-color: #f0f9ff; }
+      80% { background-color: #f0fdf4; }
     }
 
     /* Touch device optimizations */
@@ -550,6 +526,10 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
+      
+      .loader {
+        animation: none;
+      }
     }
 
     /* High contrast mode support */
@@ -564,48 +544,154 @@
         --heart: #ff0000;
       }
     }
+
+    /* Performance optimization for low-end devices */
+    .reduced-effects .heart-group {
+      filter: none !important;
+      animation: none !important;
+    }
+
+    .reduced-effects .star-group {
+      filter: none !important;
+      animation: none !important;
+    }
   </style>
 </head>
 <body>
-  <div class="valentine" id="valentine-bg">
-    <div id="heart-group-1"></div>
-    <div id="heart-group-2"></div>
-    <div id="heart-group-3"></div>
-    <div id="heart-group-4"></div>
-    <div id="star-group-1"></div>
-    <div id="star-group-2"></div>
-    <div class="heart-fixed heart-xs"></div>
-    <div class="heart-fixed heart-sm"></div>
-    <div class="heart-fixed heart-lg"></div>
-    <div class="overlay" id="overlay"></div>
-  </div>
-  <div class="container" id="envelope-container">
-    <div class="envelope"></div>
-    <div class="card">
-      <h1 class="message">Happy Birthday Aryama,<br>Baby,<br>I Love You   <br>    </h1>
-      <div class="heart"></div>
+  <!-- Loader -->
+  <div class="loader-container" id="loader">
+    <div class="loader"></div>
+    <div class="loader-text">Loading Birthday Magic...</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress"></div>
     </div>
-    <div class="cover"></div>
-    <div class="lid"></div>
-    <div class="shadow"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="main-content">
+    <div class="valentine" id="valentine-bg">
+      <div id="heart-group-1" class="heart-group"></div>
+      <div id="heart-group-2" class="heart-group"></div>
+      <div id="star-group-1" class="star-group"></div>
+      <div class="heart-fixed heart-xs"></div>
+      <div class="heart-fixed heart-sm"></div>
+      <div class="heart-fixed heart-lg"></div>
+      <div class="overlay" id="overlay"></div>
+    </div>
+    <div class="container" id="envelope-container">
+      <div class="envelope"></div>
+      <div class="card">
+        <h1 class="message">Happy Birthday Aryama,<br>Baby,<br>I Love You</h1>
+        <div class="heart"></div>
+      </div>
+      <div class="cover"></div>
+      <div class="lid"></div>
+      <div class="shadow"></div>
+    </div>
   </div>
   
-  <audio id="valentine-audio" preload="auto">
+  <audio id="valentine-audio" preload="none">
     <source src="hbd.mp3" type="audio/mpeg">
     <source src="hbd.ogg" type="audio/ogg">
     <source src="hbd.wav" type="audio/wav">
   </audio>
   
   <script>
+    // Performance and loading variables
+    let isEnvelopeOpened = false;
+    let audioContext = null;
+    let musicPlaying = false;
+    let resourcesLoaded = false;
+    let animationsEnabled = true;
+    
+    // DOM elements
     const container = document.getElementById('envelope-container');
     const audio = document.getElementById('valentine-audio');
     const valentineBg = document.getElementById('valentine-bg');
     const overlay = document.getElementById('overlay');
     const body = document.body;
+    const loader = document.getElementById('loader');
+    const mainContent = document.getElementById('main-content');
+    const progress = document.getElementById('progress');
     
-    let isEnvelopeOpened = false;
-    let audioContext = null;
-    let musicPlaying = false;
+    // Performance detection
+    const isLowEndDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
+    const isSlowConnection = navigator.connection && navigator.connection.effectiveType === '2g';
+    
+    if (isLowEndDevice || isSlowConnection) {
+      body.classList.add('reduced-effects');
+      animationsEnabled = false;
+    }
+    
+    // Lazy loading manager
+    class LazyLoader {
+      constructor() {
+        this.loadedResources = 0;
+        this.totalResources = 4; // fonts, audio, animations, images
+        this.updateProgress();
+      }
+      
+      updateProgress() {
+        const percentage = (this.loadedResources / this.totalResources) * 100;
+        progress.style.width = percentage + '%';
+        
+        if (percentage >= 100) {
+          this.completeLoading();
+        }
+      }
+      
+      markResourceLoaded() {
+        this.loadedResources++;
+        this.updateProgress();
+      }
+      
+      completeLoading() {
+        setTimeout(() => {
+          loader.classList.add('hidden');
+          mainContent.classList.add('loaded');
+          resourcesLoaded = true;
+          this.enableAnimations();
+        }, 500);
+      }
+      
+      enableAnimations() {
+        if (!animationsEnabled) return;
+        
+        // Gradually enable heart groups
+        setTimeout(() => {
+          document.getElementById('heart-group-1').classList.add('active');
+        }, 1000);
+        
+        setTimeout(() => {
+          document.getElementById('heart-group-2').classList.add('active');
+        }, 1500);
+        
+        setTimeout(() => {
+          document.getElementById('star-group-1').classList.add('active');
+        }, 2000);
+      }
+    }
+    
+    const lazyLoader = new LazyLoader();
+    
+    // Font loading detection
+    document.fonts.ready.then(() => {
+      lazyLoader.markResourceLoaded();
+    });
+    
+    // Audio preloading (lazy)
+    function loadAudio() {
+      return new Promise((resolve) => {
+        if (audio.readyState >= 3) {
+          resolve();
+          return;
+        }
+        
+        audio.addEventListener('canplaythrough', resolve, { once: true });
+        audio.addEventListener('error', resolve, { once: true });
+        audio.load();
+      });
+    }
     
     // Initialize audio context on first user interaction
     function initAudio() {
@@ -628,33 +714,32 @@
       };
     }
     
+    // Enhanced glitter mode - only when music plays
+    function activateGlitterMode() {
+      if (!animationsEnabled) return;
+      
+      body.classList.add('music-playing');
+      
+      // Create limited dynamic sparkles for performance
+      createDynamicSparkles(10); // Reduced from 20
+    }
     
     function deactivateGlitterMode() {
       body.classList.remove('music-playing');
-      
-      // Reset to original less glittery state
-      const heartGroups = document.querySelectorAll('[id*="heart-group"]');
-      heartGroups.forEach((group) => {
-        group.style.animation = '';
-        group.style.filter = '';
-      });
-      
-      const starGroups = document.querySelectorAll('[id*="star-group"]');
-      starGroups.forEach((group) => {
-        group.style.filter = '';
-        group.style.animation = '';
-      });
+      removeDynamicSparkles();
     }
     
-    // Create dynamic sparkle elements
-    function createDynamicSparkles() {
-      for (let i = 0; i < 20; i++) {
+    // Create dynamic sparkle elements (performance optimized)
+    function createDynamicSparkles(count = 10) {
+      const fragment = document.createDocumentFragment();
+      
+      for (let i = 0; i < count; i++) {
         const sparkle = document.createElement('div');
         sparkle.className = 'dynamic-sparkle';
         sparkle.style.cssText = `
           position: absolute;
-          width: ${Math.random() * 6 + 3}px;
-          height: ${Math.random() * 6 + 3}px;
+          width: ${Math.random() * 4 + 2}px;
+          height: ${Math.random() * 4 + 2}px;
           background: radial-gradient(circle, ${Math.random() > 0.5 ? '#ffd700' : '#ffffff'} 0%, transparent 70%);
           border-radius: 50%;
           left: ${Math.random() * 100}%;
@@ -662,19 +747,21 @@
           z-index: 70;
           opacity: 0;
           animation: dynamicSparkle ${Math.random() * 2 + 1}s ease-in-out infinite;
-          filter: drop-shadow(0 0 8px currentColor);
+          pointer-events: none;
         `;
-        valentineBg.appendChild(sparkle);
+        fragment.appendChild(sparkle);
       }
       
-      // Add CSS for dynamic sparkles
+      valentineBg.appendChild(fragment);
+      
+      // Add CSS for dynamic sparkles if not exists
       if (!document.getElementById('dynamic-sparkle-styles')) {
         const style = document.createElement('style');
         style.id = 'dynamic-sparkle-styles';
         style.textContent = `
           @keyframes dynamicSparkle {
-            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
-            50% { opacity: 1; transform: scale(1.5) rotate(180deg); }
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1.5); }
           }
         `;
         document.head.appendChild(style);
@@ -688,7 +775,7 @@
     
     // Handle envelope opening with enhanced effects
     function openEnvelope() {
-      if (isEnvelopeOpened) return;
+      if (isEnvelopeOpened || !resourcesLoaded) return;
       
       isEnvelopeOpened = true;
       initAudio();
@@ -698,44 +785,55 @@
         valentineBg.classList.add('hidden');
         overlay.classList.add('hidden');
         
-        // Change body background to cycling images
+        // Change body background to cycling colors (optimized)
         body.classList.add('envelope-opened');
         
-        // Play audio with enhanced glitter effects
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            musicPlaying = true;
-            activateGlitterMode();
-            
-            // Monitor audio playback
-            audio.addEventListener('ended', () => {
-              musicPlaying = false;
-              deactivateGlitterMode();
-            });
-            
-            audio.addEventListener('pause', () => {
-              musicPlaying = false;
-              deactivateGlitterMode();
-            });
-            
-          }).catch(error => {
-            console.log('Audio autoplay prevented:', error);
-            // Fallback: play on next user interaction
-            document.addEventListener('click', () => {
-              audio.play().then(() => {
-                musicPlaying = true;
-                activateGlitterMode();
-              }).catch(e => console.log('Audio play failed:', e));
-            }, { once: true });
+        // Load and play audio
+        if (!audio.preload || audio.preload === 'none') {
+          loadAudio().then(() => {
+            lazyLoader.markResourceLoaded();
+            playAudioWithEffects();
           });
+        } else {
+          playAudioWithEffects();
         }
       });
     }
     
+    function playAudioWithEffects() {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          musicPlaying = true;
+          activateGlitterMode();
+          
+          // Monitor audio playback
+          audio.addEventListener('ended', () => {
+            musicPlaying = false;
+            deactivateGlitterMode();
+          }, { once: true });
+          
+          audio.addEventListener('pause', () => {
+            musicPlaying = false;
+            deactivateGlitterMode();
+          }, { once: true });
+          
+        }).catch(error => {
+          console.log('Audio autoplay prevented:', error);
+          // Fallback: play on next user interaction
+          document.addEventListener('click', () => {
+            audio.play().then(() => {
+              musicPlaying = true;
+              activateGlitterMode();
+            }).catch(e => console.log('Audio play failed:', e));
+          }, { once: true });
+        });
+      }
+    }
+    
     // Handle envelope closing
     function closeEnvelope() {
-      if (!isEnvelopeOpened) return;
+      if (!isEnvelopeOpened || !resourcesLoaded) return;
       
       isEnvelopeOpened = false;
       musicPlaying = false;
@@ -745,7 +843,7 @@
         valentineBg.classList.remove('hidden');
         overlay.classList.remove('hidden');
         
-        // Remove body background image
+        // Remove body background effects
         body.classList.remove('envelope-opened');
         
         // Deactivate glitter mode
@@ -758,72 +856,60 @@
     }
     
     // Debounced event handlers for better performance
-    const debouncedOpen = debounce(openEnvelope, 50);
-    const debouncedClose = debounce(closeEnvelope, 100);
+    const debouncedOpen = debounce(openEnvelope, 100);
+    const debouncedClose = debounce(closeEnvelope, 150);
     
-    // Desktop hover events
-    if (window.matchMedia('(hover: hover)').matches) {
-      container.addEventListener('mouseenter', debouncedOpen);
-      container.addEventListener('mouseleave', debouncedClose);
+    // Initialize loading sequence
+    function initializeApp() {
+      // Mark initial resources as loaded
+      lazyLoader.markResourceLoaded(); // DOM ready
+      lazyLoader.markResourceLoaded(); // CSS loaded
+      
+      // Setup event listeners after loading
+      setTimeout(() => {
+        setupEventListeners();
+        lazyLoader.markResourceLoaded(); // Event listeners ready
+      }, 100);
     }
     
-    // Touch events for mobile
-    container.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      initAudio();
-      debouncedOpen();
-    });
-    
-    container.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      setTimeout(debouncedClose, 3000); // Keep open longer on mobile
-    });
-    
-    // Click events as fallback
-    container.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (!isEnvelopeOpened) {
+    function setupEventListeners() {
+      // Desktop hover events
+      if (window.matchMedia('(hover: hover)').matches) {
+        container.addEventListener('mouseenter', debouncedOpen);
+        container.addEventListener('mouseleave', debouncedClose);
+      }
+      
+      // Touch events for mobile (optimized)
+      let touchTimeout;
+      container.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        initAudio();
         debouncedOpen();
-      }
-    });
-    
-    // Handle page visibility changes
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        audio.pause();
-        musicPlaying = false;
-        deactivateGlitterMode();
-      }
-    });
-    
-    // Preload background images for smoother transitions
-    const backgroundImages = [
-      'bg1.jpg',
-      'bg2.jpg',
-      'bg3.jpg',
-      'bg4.jpg',
-      'bg5.jpg',
-      'bg6.jpg',
-      'bg7.jpg'
-    ];
-    
-    backgroundImages.forEach(src => {
-      const img = new Image();
-      img.src = src;
-    });
-    
-    // Performance optimization: reduce animation complexity on lower-end devices
-    const isLowEndDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
-    if (isLowEndDevice) {
-      document.documentElement.style.setProperty('--animation-duration-multiplier', '2');
-      // Reduce blur effects on low-end devices
-      const blurElements = document.querySelectorAll('[style*="blur"]');
-      blurElements.forEach(el => {
-        const currentFilter = getComputedStyle(el).filter;
-        if (currentFilter.includes('blur')) {
-          el.style.filter = currentFilter.replace(/blur\((\d+)px\)/, (match, px) => {
-            return `blur(${Math.max(1, parseInt(px) / 2)}px)`;
-          });
+        
+        // Auto-close on mobile after delay
+        touchTimeout = setTimeout(debouncedClose, 4000);
+      }, { passive: false });
+      
+      container.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        clearTimeout(touchTimeout);
+        touchTimeout = setTimeout(debouncedClose, 2000);
+      }, { passive: false });
+      
+      // Click events as fallback
+      container.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!isEnvelopeOpened) {
+          debouncedOpen();
+        }
+      });
+      
+      // Handle page visibility changes
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && musicPlaying) {
+          audio.pause();
+          musicPlaying = false;
+          deactivateGlitterMode();
         }
       });
     }
@@ -833,49 +919,95 @@
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        container.style.display = 'none';
-        container.offsetHeight; // Trigger reflow
-        container.style.display = '';
+        if (isEnvelopeOpened) {
+          // Refresh layout on resize
+          container.style.transform = 'translateZ(0)'; // Force redraw
+        }
       }, 250);
     });
     
-    // Audio visualization effect (optional enhancement)
-    function createAudioVisualization() {
-      if (!audioContext || !musicPlaying) return;
-      
-      try {
-        const analyser = audioContext.createAnalyser();
-        const source = audioContext.createMediaElementSource(audio);
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
-        
-        analyser.fftSize = 256;
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-        
-        function visualize() {
-          if (!musicPlaying) return;
-          
-          analyser.getByteFrequencyData(dataArray);
-          const average = dataArray.reduce((a, b) => a + b) / bufferLength;
-          
-          // Adjust sparkle intensity based on audio level
-          const sparkleGroups = document.querySelectorAll('[id*="sparkle-group"], [id*="shimmer-group"]');
-          sparkleGroups.forEach(group => {
-            group.style.opacity = Math.min(1, average / 128 + 0.3);
-          });
-          
-          requestAnimationFrame(visualize);
-        }
-        
-        visualize();
-      } catch (e) {
-        console.log('Audio visualization not supported:', e);
+    // Audio loading with lazy approach
+    function preloadAudio() {
+      if (isLowEndDevice || isSlowConnection) {
+        // Skip audio preloading on low-end devices
+        lazyLoader.markResourceLoaded();
+        return;
       }
+      
+      loadAudio().then(() => {
+        lazyLoader.markResourceLoaded();
+      }).catch(() => {
+        // Continue even if audio fails to load
+        lazyLoader.markResourceLoaded();
+      });
     }
     
-    // Start audio visualization when music begins
-    audio.addEventListener('play', createAudioVisualization);
+    // Intersection Observer for lazy animation loading
+    function setupLazyAnimations() {
+      if (!window.IntersectionObserver || !animationsEnabled) {
+        lazyLoader.markResourceLoaded();
+        return;
+      }
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate');
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      // Observe animation elements
+      document.querySelectorAll('.heart-group, .star-group').forEach(el => {
+        observer.observe(el);
+      });
+      
+      lazyLoader.markResourceLoaded();
+    }
+    
+    // Initialize app when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+      initializeApp();
+    }
+    
+    // Start loading sequence
+    setTimeout(() => {
+      preloadAudio();
+      setupLazyAnimations();
+    }, 100);
+    
+    // Fallback: ensure loader disappears even if resources fail
+    setTimeout(() => {
+      if (!resourcesLoaded) {
+        console.log('Fallback: Force loading complete');
+        lazyLoader.completeLoading();
+      }
+    }, 5000);
+    
+    // Error handling for better user experience
+    window.addEventListener('error', (e) => {
+      console.error('Error occurred:', e.error);
+      // Continue loading even with errors
+      if (!resourcesLoaded) {
+        lazyLoader.markResourceLoaded();
+      }
+    });
+    
+    // Performance monitoring (optional)
+    if ('performance' in window) {
+      window.addEventListener('load', () => {
+        const loadTime = performance.now();
+        console.log(`Page loaded in ${loadTime.toFixed(2)}ms`);
+        
+        // If page took too long to load, reduce effects
+        if (loadTime > 3000) {
+          body.classList.add('reduced-effects');
+          animationsEnabled = false;
+        }
+      });
+    }
   </script>
 </body>
 </html>
