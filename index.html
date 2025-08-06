@@ -342,12 +342,12 @@
       filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
     }
 
-    .container:hover .lid {
+    .container.clicked .lid {
       animation: open 0.5s ease-out;
       animation-fill-mode: forwards;
     }
 
-    .container:hover .card {
+    .container.clicked .card {
       animation: slide 0.2s ease-out;
       animation-delay: 0.5s;
       animation-fill-mode: forwards;
@@ -497,22 +497,37 @@
     }
 
     @keyframes cycleBackgrounds {
-      0%, 100% { background-color: var(--background); }
-      16% { background-color: #ffe4e6; }
-      32% { background-color: #fdf2f8; }
-      48% { background-color: #fef7ff; }
-      64% { background-color: #f0f9ff; }
-      80% { background-color: #f0fdf4; }
+      10% {
+        background-image: url('bg1.jpg');
+      }
+      25% {
+        background-image: url('bg2.jpg');
+      }
+      40% {
+        background-image: url('bg3.jpg');
+      }
+      65% {
+        background-image: url('bg4.jpg');
+      }
+      80% {
+        background-image: url('bg5.jpg');
+      }
+      90% {
+        background-image: url('bg6.jpg');
+      }
+      100% {
+        background-image: url('bg7.jpg');
+      }
     }
 
     /* Touch device optimizations */
     @media (hover: none) and (pointer: coarse) {
-      .container:active .lid {
+      .container.clicked .lid {
         animation: open 0.5s ease-out;
         animation-fill-mode: forwards;
       }
 
-      .container:active .card {
+      .container.clicked .card {
         animation: slide 0.2s ease-out;
         animation-delay: 0.5s;
         animation-fill-mode: forwards;
@@ -873,36 +888,37 @@
     }
     
     function setupEventListeners() {
-      // Desktop hover events
-      if (window.matchMedia('(hover: hover)').matches) {
-        container.addEventListener('mouseenter', debouncedOpen);
-        container.addEventListener('mouseleave', debouncedClose);
-      }
+      // Click events for opening envelope
+      container.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!isEnvelopeOpened) {
+          container.classList.add('clicked');
+          debouncedOpen();
+        } else {
+          container.classList.remove('clicked');
+          debouncedClose();
+        }
+      });
       
       // Touch events for mobile (optimized)
       let touchTimeout;
       container.addEventListener('touchstart', (e) => {
         e.preventDefault();
         initAudio();
-        debouncedOpen();
-        
-        // Auto-close on mobile after delay
-        touchTimeout = setTimeout(debouncedClose, 4000);
+        if (!isEnvelopeOpened) {
+          container.classList.add('clicked');
+          debouncedOpen();
+        }
       }, { passive: false });
       
       container.addEventListener('touchend', (e) => {
         e.preventDefault();
-        clearTimeout(touchTimeout);
-        touchTimeout = setTimeout(debouncedClose, 2000);
+        // Auto-close on mobile after delay
+        touchTimeout = setTimeout(() => {
+          container.classList.remove('clicked');
+          debouncedClose();
+        }, 4000);
       }, { passive: false });
-      
-      // Click events as fallback
-      container.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (!isEnvelopeOpened) {
-          debouncedOpen();
-        }
-      });
       
       // Handle page visibility changes
       document.addEventListener('visibilitychange', () => {
@@ -976,6 +992,7 @@
     setTimeout(() => {
       preloadAudio();
       setupLazyAnimations();
+      preloadBackgroundImages(); // Add background image preloading
     }, 100);
     
     // Fallback: ensure loader disappears even if resources fail
